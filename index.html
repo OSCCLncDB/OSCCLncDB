@@ -2,25 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>OSCC LncRNA Database</title>
+  <title>OSCCLncDB</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
   <style>
-    body { padding: 2rem; background: #f7f9fc; }
+    body { padding: 2rem; background: #f7f9fc; font-family: Arial, sans-serif; }
     h1 { margin-bottom: 1rem; }
     .btn-link { padding: 2px 8px; font-size: 0.9rem; }
     .table-container { overflow-x: auto; }
+    footer { font-size: 0.85rem; }
   </style>
 </head>
 <body>
   <h1>🧬 OSCCLncDB</h1>
   <p>Explore curated lncRNA profiles involved in oral squamous cell carcinoma (OSCC).</p>
 
+  <!-- Search bar -->
+  <div class="mb-3">
+    <input type="text" id="customSearchBox" class="form-control" placeholder="🔍 Search lncRNA by name, role, description..." />
+  </div>
+
+  <!-- Filter buttons -->
   <div class="mb-3">
     <button id="filterSuppressors" class="btn btn-outline-primary">Show Tumor Suppressors Only</button>
     <button id="clearFilter" class="btn btn-outline-secondary">Clear Filter</button>
   </div>
 
+  <!-- lncRNA Data Table -->
   <div class="table-container">
     <table id="lncTable" class="display table table-bordered table-striped" style="width:100%">
       <thead class="table-dark">
@@ -50,12 +58,19 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <pre id="sequenceContent"></pre>
+          <pre id="sequenceContent" style="white-space:pre-wrap; max-height:400px; overflow-y:auto;"></pre>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer class="text-center mt-5 mb-3 text-muted">
+    <hr />
+    <small>&copy; Centre for Molecular Biology, Central University of Jammu, India</small>
+  </footer>
+
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -64,28 +79,33 @@
 
     $(document).ready(function () {
       $.ajax({
-        url: "lncRNA_data.csv",
+        url: "lncRNA_data.csv", // Use relative path or raw GitHub link
         dataType: "text",
         success: function (data) {
-          const rows = data.split("\n").slice(1);
+          const rows = data.split("\n").slice(1); // skip header
           rows.forEach((line) => {
-            const cols = line.split(",");
+            const cols = line.split("\t"); // tab-separated format
             if (cols.length >= 13) {
-              const [lncRNA, Description, Sequence, length, doi, Ensembl_ID, Location, Expression, Associations, Role, Target/effect, Interactor, Gene_ID] = cols;
-              const tr = `<tr data-role="${role.toLowerCase().trim()}">
+              let [
+                lncRNA, description, sequence, length, doiURL,
+                ensemblID, location, expression, associations,
+                role, targetEffect, interactor, geneID
+              ] = cols.map(x => x.replace(/"/g, "").trim());
+
+              // Clean encoding artifacts
+              associations = associations.replace(/â†‘/g, '↑').replace(/â†“/g, '↓');
+              targetEffect = targetEffect.replace(/Î²/g, 'β');
+
+              const tr = `<tr data-role="${role.toLowerCase()}">
                 <td>${lncRNA}</td>
-                <td>${Description}</td>
+                <td>${description}</td>
                 <td>${length}</td>
-                <td>${doi}</td>
-                <td>${Ensembl_ID}</td>
-                <td>${Location}</td>
-                <td>${Expression}</td>
-                <td>${Role}</td>
-                <td>${Associations}</td>
-                <td>${Target/effect}</td>
-                <td>${interactor}</td>
-                <td>${Gene_ID}</td>
-                <td><button class="btn btn-sm btn-primary btn-link show-seq" data-sequence="${sequence.replaceAll('"','')}">View</button></td>
+                <td>${location}</td>
+                <td>${expression}</td>
+                <td>${role}</td>
+                <td>${associations}</td>
+                <td>${targetEffect}</td>
+                <td><button class="btn btn-sm btn-primary btn-link show-seq" data-sequence="${sequence}">View</button></td>
                 <td><a class="btn btn-sm btn-success btn-link" href="${doiURL}" target="_blank">DOI</a></td>
               </tr>`;
               $('#lncTable tbody').append(tr);
@@ -94,11 +114,24 @@
 
           table = $('#lncTable').DataTable();
 
-          // Modal display for sequence
+          // Search box
+          $("#customSearchBox").on("keyup", function () {
+            table.search(this.value).draw();
+          });
+
+          // Sequence Modal
           $(document).on("click", ".show-seq", function () {
-            const seq = $(this).data("Sequence");
-            $("#SequenceContent").text(seq);
-            const modal = new bootstrap.Modal(document.getElementById("SequenceModal"));
+            let rawSeq = $(this).data("sequence");
+
+            // Annotate tags (optional customization)
+            rawSeq = rawSeq
+              .replaceAll("[Promoter]", '<span style="background-color:#ffe0b2; font-weight:bold;">Promoter</span>')
+              .replaceAll("[Exon]", '<span style="background-color:#dcedc8; font-weight:bold;">Exon</span>')
+              .replaceAll("[miRNA]", '<span style="background-color:#f8bbd0; font-weight:bold;">miRNA Site</span>')
+              .replaceAll("[Mutation]", '<span style="background-color:#ffcdd2; font-weight:bold;">Mutation</span>');
+
+            $("#sequenceContent").html(`<code>${rawSeq}</code>`);
+            const modal = new bootstrap.Modal(document.getElementById("sequenceModal"));
             modal.show();
           });
 
@@ -119,9 +152,5 @@
       });
     });
   </script>
-<footer class="text-center mt-5 mb-3 text-muted">
-  <hr />
-  <small>&copy; Centre for Molecular Biology, Central University of Jammu, India</small>
-</footer>
 </body>
 </html>
