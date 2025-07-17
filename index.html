@@ -70,17 +70,21 @@
           const rows = data.split("\n").slice(1);
           rows.forEach((line) => {
             const cols = line.split(",");
-            if (cols.length >= 11) {
-              const [lncRNA, description, sequence, length, doiURL, ensembl, location, expression, associations, role, target] = cols;
+            if (cols.length >= 13) {
+              const [lncRNA, Description, Sequence, length, doi, Ensembl_ID, Location, Expression, Associations, Role, Target/effect, Interactor, Gene_ID] = cols;
               const tr = `<tr data-role="${role.toLowerCase().trim()}">
                 <td>${lncRNA}</td>
-                <td>${description}</td>
+                <td>${Description}</td>
                 <td>${length}</td>
-                <td>${location}</td>
-                <td>${expression}</td>
-                <td>${role}</td>
-                <td>${associations}</td>
-                <td>${target}</td>
+                <td>${doi}</td>
+                <td>${Ensembl_ID}</td>
+                <td>${Location}</td>
+                <td>${Expression}</td>
+                <td>${Role}</td>
+                <td>${Associations}</td>
+                <td>${Target/effect}</td>
+                <td>${interactor}</td>
+                <td>${Gene_ID}</td>
                 <td><button class="btn btn-sm btn-primary btn-link show-seq" data-sequence="${sequence.replaceAll('"','')}">View</button></td>
                 <td><a class="btn btn-sm btn-success btn-link" href="${doiURL}" target="_blank">DOI</a></td>
               </tr>`;
@@ -92,9 +96,9 @@
 
           // Modal display for sequence
           $(document).on("click", ".show-seq", function () {
-            const seq = $(this).data("sequence");
-            $("#sequenceContent").text(seq);
-            const modal = new bootstrap.Modal(document.getElementById("sequenceModal"));
+            const seq = $(this).data("Sequence");
+            $("#SequenceContent").text(seq);
+            const modal = new bootstrap.Modal(document.getElementById("SequenceModal"));
             modal.show();
           });
 
