@@ -2,185 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OSCCLncDB - Oral Cancer lncRNA Database</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OSCC LncRNA Database</title>
   <style>
-    body {
-      font-family: 'Open Sans', sans-serif;
-      margin: 0;
-      background-color: #f4f4f4;
-    }
-    header {
-      background-color: #2c3e50;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    main {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 0 20px;
-    }
-    .search-container {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    #searchBox {
-      width: 80%;
-      padding: 10px;
-      font-size: 16px;
-    }
-    .lncrna-card {
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .lncrna-card h2 {
-      color: #2980b9;
-      margin-bottom: 10px;
-    }
-    .lncrna-card p {
-      margin: 4px 0;
-    }
-    .lncrna-card button {
-      margin-top: 10px;
-      padding: 8px 12px;
-      background-color: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .lncrna-card button:hover {
-      background-color: #2980b9;
-    }
-    #sequenceModal {
-      display: none;
-      position: fixed;
-      z-index: 1;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0, 0, 0, 0.6);
-    }
-    #modalContent {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 8px;
-      width: 80%;
-      max-width: 600px;
-      white-space: pre-wrap;
-    }
-    #closeModal {
-      float: right;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    footer {
-      background-color: #2c3e50;
-      color: white;
-      text-align: center;
-      padding: 10px;
-      position: fixed;
-      width: 100%;
-      bottom: 0;
-    }
-    .pagination {
-      text-align: center;
-      margin: 20px;
-    }
-    .pagination button {
-      margin: 0 5px;
-      padding: 5px 10px;
-      font-size: 1rem;
-    }
+    body { font-family: Arial, sans-serif; margin: 2rem; background-color: #f9f9f9; }
+    .card { background: white; padding: 1.5rem; margin-bottom: 1rem; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    .card h2 { margin: 0 0 0.5rem; color: #333; }
+    .card p { margin: 0.3rem 0; line-height: 1.4; }
+    .pagination { margin-top: 1rem; text-align: center; }
+    .pagination button { margin: 0 5px; padding: 0.5rem 1rem; font-size: 1rem; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>OSCCLncDB</h1>
-    <p>A curated database of lncRNAs associated with Oral Squamous Cell Carcinoma</p>
-  </header>
 
-  <main>
-    <div class="search-container">
-      <input type="text" id="searchBox" oninput="renderPage()" placeholder="Search by lncRNA, Role, Gene ID, etc...">
-    </div>
-    <div id="data-container"></div>
-  </main>
-
+  <h1>OSCC LncRNA Database</h1>
+  <div id="container"></div>
   <div class="pagination">
     <button onclick="prevPage()">Previous</button>
-    <span id="page-num">Page 1</span>
+    <span id="pageNum">Page 1</span>
     <button onclick="nextPage()">Next</button>
-  </div>
-
-  <footer>
-    &copy; 2025 OSCCLncDB | All rights reserved
-  </footer>
-
-  <div id="sequenceModal">
-    <div id="modalContent">
-      <span id="closeModal" onclick="document.getElementById('sequenceModal').style.display='none'">&times;</span>
-      <h3>lncRNA Sequence</h3>
-      <div id="sequenceText"></div>
-    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script>
+    let data = [];
     let currentPage = 1;
     const itemsPerPage = 5;
-    let data = [];
-    let filteredData = [];
 
     function renderPage() {
-      const query = document.getElementById('searchBox').value.toLowerCase();
-      filteredData = data.filter(item =>
-        Object.values(item).some(val =>
-          String(val).toLowerCase().includes(query)
-        )
-      );
-
-      const container = document.getElementById('data-container');
-      container.innerHTML = '';
-
       const start = (currentPage - 1) * itemsPerPage;
       const end = start + itemsPerPage;
-      const pageData = filteredData.slice(start, end);
+      const pageData = data.slice(start, end);
+
+      const container = document.getElementById("container");
+      container.innerHTML = "";
 
       pageData.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'lncrna-card';
+        const card = document.createElement("div");
+        card.className = "card";
         card.innerHTML = `
           <h2>${item.lncRNA}</h2>
           <p><strong>Description:</strong> ${item.Description}</p>
           <p><strong>Location:</strong> ${item.Location}</p>
           <p><strong>Ensembl ID:</strong> ${item.Ensembl_ID}</p>
-          <p><strong>Gene ID:</strong> ${item["Gene ID"]}</p>
           <p><strong>Expression:</strong> ${item.Expression}</p>
           <p><strong>Associations:</strong> ${item.Associations}</p>
-          <p><strong>Role:</strong> ${item.Role}</p>
+          <p><strong>Role:</strong> ${item["Role"]}</p>
           <p><strong>Target/Effect:</strong> ${item["Target/effect"]}</p>
-          <p><strong>Interactor:</strong> ${item.Interactor}</p>
-          <p><strong>DOI:</strong> <a href="${item.doi}" target="_blank">${item.doi}</a></p>
-          <button onclick="viewSequence(` + "'" + (item["Sequence"] || 'Not available').replace(/'/g, "\\'") + "'")">View Sequence</button>
+          <p><strong>Interactor:</strong> ${item["Interactor"]}</p>
+          <p><strong>Gene ID:</strong> ${item["Gene ID"]}</p>
+          <p><a href="${item.doi}" target="_blank">DOI Link</a></p>
         `;
         container.appendChild(card);
       });
 
-      document.getElementById('page-num').textContent = `Page ${currentPage}`;
-    }
-
-    function viewSequence(seq) {
-      document.getElementById('sequenceText').textContent = seq;
-      document.getElementById('sequenceModal').style.display = 'block';
+      document.getElementById("pageNum").textContent = `Page ${currentPage}`;
     }
 
     function prevPage() {
@@ -191,19 +67,19 @@
     }
 
     function nextPage() {
-      if (currentPage * itemsPerPage < filteredData.length) {
+      if (currentPage * itemsPerPage < data.length) {
         currentPage++;
         renderPage();
       }
     }
 
-    Papa.parse('lncRNA_data.csv', {
+    // Load CSV using PapaParse
+    Papa.parse("lncRNA_data.csv", {
       download: true,
       header: true,
       skipEmptyLines: true,
       complete: function(results) {
         data = results.data;
-        filteredData = data;
         renderPage();
       }
     });
