@@ -22,14 +22,17 @@
       margin: 20px auto;
       padding: 0 20px;
     }
-    .search-container {
+    .search-container, .filter-container {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
-    #searchBox {
-      width: 80%;
+    #searchBox, #roleFilter {
       padding: 10px;
       font-size: 16px;
+      margin: 5px;
+    }
+    #searchBox {
+      width: 60%;
     }
     .lncrna-card {
       background-color: #fff;
@@ -60,7 +63,7 @@
     #sequenceModal {
       display: none;
       position: fixed;
-      z-index: 1;
+      z-index: 999;
       left: 0;
       top: 0;
       width: 100%;
@@ -87,9 +90,9 @@
       color: white;
       text-align: center;
       padding: 10px;
-      position: fixed;
+      position: relative;
       width: 100%;
-      bottom: 0;
+      margin-top: 40px;
     }
     .pagination {
       text-align: center;
@@ -112,17 +115,22 @@
     <div class="search-container">
       <input type="text" id="searchBox" oninput="renderPage()" placeholder="Search by lncRNA, Role, Gene ID, etc...">
     </div>
+    <div class="filter-container">
+      <select id="roleFilter" onchange="renderPage()">
+        <option value="">Filter by Role</option>
+      </select>
+    </div>
     <div id="data-container"></div>
+
+    <div class="pagination">
+      <button onclick="prevPage()">Previous</button>
+      <span id="page-num">Page 1</span>
+      <button onclick="nextPage()">Next</button>
+    </div>
   </main>
 
-  <div class="pagination">
-    <button onclick="prevPage()">Previous</button>
-    <span id="page-num">Page 1</span>
-    <button onclick="nextPage()">Next</button>
-  </div>
-
   <footer>
-    &copy; 2025 OSCCLncDB | All rights reserved
+    &copy; 2025 OSCCLncRNA, Centre for Molecular Biology, Central University of Jammu, India | All rights reserved
   </footer>
 
   <div id="sequenceModal">
@@ -142,11 +150,13 @@
 
     function renderPage() {
       const query = document.getElementById('searchBox').value.toLowerCase();
-      filteredData = data.filter(item =>
-        Object.values(item).some(val =>
-          String(val).toLowerCase().includes(query)
-        )
-      );
+      const roleFilter = document.getElementById('roleFilter').value.toLowerCase();
+
+      filteredData = data.filter(item => {
+        const matchesQuery = Object.values(item).some(val => String(val).toLowerCase().includes(query));
+        const matchesRole = !roleFilter || (item.Role && item.Role.toLowerCase() === roleFilter);
+        return matchesQuery && matchesRole;
+      });
 
       const container = document.getElementById('data-container');
       container.innerHTML = '';
@@ -170,7 +180,7 @@
           <p><strong>Target/Effect:</strong> ${item["Target/effect"]}</p>
           <p><strong>Interactor:</strong> ${item.Interactor}</p>
           <p><strong>DOI:</strong> <a href="${item.doi}" target="_blank">${item.doi}</a></p>
-          <button onclick="viewSequence(${JSON.stringify(item["Sequence"] || 'Not available')})">View Sequence</button>
+          <button onclick="viewSequence(\`${item["Sequence"] || 'Not available'}\`)" type="button">View Sequence</button>
         `;
         container.appendChild(card);
       });
@@ -204,9 +214,21 @@
       complete: function(results) {
         data = results.data;
         filteredData = data;
+        populateFilter();
         renderPage();
       }
     });
+
+    function populateFilter() {
+      const roleSet = new Set(data.map(d => d.Role).filter(Boolean));
+      const filter = document.getElementById('roleFilter');
+      roleSet.forEach(role => {
+        const opt = document.createElement('option');
+        opt.value = role;
+        opt.textContent = role;
+        filter.appendChild(opt);
+      });
+    }
   </script>
 </body>
 </html>
