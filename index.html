@@ -2,38 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OSCCLncDB - Oral Cancer lncRNA Database</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Open Sans', sans-serif;
       margin: 0;
       background-color: #f4f4f4;
     }
+
     header {
       background-color: #2c3e50;
       color: white;
       padding: 20px;
       text-align: center;
     }
+
     main {
       max-width: 1000px;
       margin: 20px auto;
       padding: 0 20px;
     }
-    .search-container, .filter-container {
+
+    .search-container {
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
-    #searchBox, #roleFilter {
+
+    #searchBox {
+      width: 80%;
       padding: 10px;
       font-size: 16px;
-      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
-    #searchBox {
-      width: 60%;
-    }
+
     .lncrna-card {
       background-color: #fff;
       border-radius: 8px;
@@ -41,13 +45,16 @@
       margin-bottom: 20px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
+
     .lncrna-card h2 {
       color: #2980b9;
       margin-bottom: 10px;
     }
+
     .lncrna-card p {
       margin: 4px 0;
     }
+
     .lncrna-card button {
       margin-top: 10px;
       padding: 8px 12px;
@@ -57,9 +64,11 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .lncrna-card button:hover {
       background-color: #2980b9;
     }
+
     #sequenceModal {
       display: none;
       position: fixed;
@@ -71,37 +80,57 @@
       overflow: auto;
       background-color: rgba(0, 0, 0, 0.6);
     }
+
     #modalContent {
       background-color: #fff;
-      margin: 10% auto;
+      margin: 5% auto;
       padding: 20px;
       border-radius: 8px;
       width: 80%;
       max-width: 600px;
-      white-space: pre-wrap;
     }
+
     #closeModal {
       float: right;
       cursor: pointer;
       font-weight: bold;
+      font-size: 20px;
     }
+
+    #sequenceText {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: monospace;
+      margin-top: 10px;
+    }
+
+    .pagination {
+      text-align: center;
+      margin: 20px;
+    }
+
+    .pagination button {
+      margin: 0 5px;
+      padding: 5px 10px;
+      font-size: 1rem;
+    }
+
     footer {
       background-color: #2c3e50;
       color: white;
       text-align: center;
       padding: 10px;
-      position: relative;
-      width: 100%;
       margin-top: 40px;
+      position: relative;
     }
-    .pagination {
-      text-align: center;
-      margin: 20px;
-    }
-    .pagination button {
-      margin: 0 5px;
-      padding: 5px 10px;
-      font-size: 1rem;
+
+    @media screen and (max-width: 600px) {
+      #searchBox {
+        width: 95%;
+      }
     }
   </style>
 </head>
@@ -113,13 +142,9 @@
 
   <main>
     <div class="search-container">
-      <input type="text" id="searchBox" oninput="renderPage()" placeholder="Search by lncRNA, Role, Gene ID, etc...">
+      <input type="text" id="searchBox" oninput="renderPage()" placeholder="Search by lncRNA, Role, Gene ID, etc..." />
     </div>
-    <div class="filter-container">
-      <select id="roleFilter" onchange="renderPage()">
-        <option value="">Filter by Role</option>
-      </select>
-    </div>
+
     <div id="data-container"></div>
 
     <div class="pagination">
@@ -150,13 +175,11 @@
 
     function renderPage() {
       const query = document.getElementById('searchBox').value.toLowerCase();
-      const roleFilter = document.getElementById('roleFilter').value.toLowerCase();
-
-      filteredData = data.filter(item => {
-        const matchesQuery = Object.values(item).some(val => String(val).toLowerCase().includes(query));
-        const matchesRole = !roleFilter || (item.Role && item.Role.toLowerCase() === roleFilter);
-        return matchesQuery && matchesRole;
-      });
+      filteredData = data.filter(item =>
+        Object.values(item).some(val =>
+          String(val).toLowerCase().includes(query)
+        )
+      );
 
       const container = document.getElementById('data-container');
       container.innerHTML = '';
@@ -214,21 +237,9 @@
       complete: function(results) {
         data = results.data;
         filteredData = data;
-        populateFilter();
         renderPage();
       }
     });
-
-    function populateFilter() {
-      const roleSet = new Set(data.map(d => d.Role).filter(Boolean));
-      const filter = document.getElementById('roleFilter');
-      roleSet.forEach(role => {
-        const opt = document.createElement('option');
-        opt.value = role;
-        opt.textContent = role;
-        filter.appendChild(opt);
-      });
-    }
   </script>
 </body>
 </html>
