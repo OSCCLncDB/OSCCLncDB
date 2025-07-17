@@ -22,6 +22,15 @@
       margin: 20px auto;
       padding: 0 20px;
     }
+    .search-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #searchBox {
+      width: 80%;
+      padding: 10px;
+      font-size: 16px;
+    }
     .lncrna-card {
       background-color: #fff;
       border-radius: 8px;
@@ -35,6 +44,18 @@
     }
     .lncrna-card p {
       margin: 4px 0;
+    }
+    .lncrna-card button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .lncrna-card button:hover {
+      background-color: #2980b9;
     }
     footer {
       background-color: #2c3e50;
@@ -62,7 +83,12 @@
     <p>A curated database of lncRNAs associated with Oral Squamous Cell Carcinoma</p>
   </header>
 
-  <main id="data-container"></main>
+  <main>
+    <div class="search-container">
+      <input type="text" id="searchBox" oninput="renderPage()" placeholder="Search by lncRNA, Role, Gene ID, etc...">
+    </div>
+    <div id="data-container"></div>
+  </main>
 
   <div class="pagination">
     <button onclick="prevPage()">Previous</button>
@@ -79,14 +105,22 @@
     let currentPage = 1;
     const itemsPerPage = 5;
     let data = [];
+    let filteredData = [];
 
     function renderPage() {
+      const query = document.getElementById('searchBox').value.toLowerCase();
+      filteredData = data.filter(item =>
+        Object.values(item).some(val =>
+          String(val).toLowerCase().includes(query)
+        )
+      );
+
       const container = document.getElementById('data-container');
       container.innerHTML = '';
 
       const start = (currentPage - 1) * itemsPerPage;
       const end = start + itemsPerPage;
-      const pageData = data.slice(start, end);
+      const pageData = filteredData.slice(start, end);
 
       pageData.forEach(item => {
         const card = document.createElement('div');
@@ -103,6 +137,7 @@
           <p><strong>Target/Effect:</strong> ${item["Target/effect"]}</p>
           <p><strong>Interactor:</strong> ${item.Interactor}</p>
           <p><strong>DOI:</strong> <a href="${item.doi}" target="_blank">${item.doi}</a></p>
+          <button onclick="alert('Sequence: ' + (item.Sequence || 'Not available'))">View Sequence</button>
         `;
         container.appendChild(card);
       });
@@ -118,7 +153,7 @@
     }
 
     function nextPage() {
-      if (currentPage * itemsPerPage < data.length) {
+      if (currentPage * itemsPerPage < filteredData.length) {
         currentPage++;
         renderPage();
       }
@@ -130,6 +165,7 @@
       skipEmptyLines: true,
       complete: function(results) {
         data = results.data;
+        filteredData = data;
         renderPage();
       }
     });
