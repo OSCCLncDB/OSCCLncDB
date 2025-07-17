@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSCCLncDB - lncRNA Database</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 20px; }
+    header { background: #2c3e50; color: white; padding: 20px; text-align: center; }
+    h1 { margin: 0; font-size: 2rem; }
+    nav { margin-top: 10px; text-align: center; }
+    nav a { margin: 0 10px; color: #ecf0f1; text-decoration: none; font-weight: bold; }
+    .container { max-width: 1000px; margin: auto; padding: 20px; }
+    .card { background: white; border-left: 5px solid #3498db; padding: 15px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .card h3 { margin: 0; color: #2c3e50; }
+    .card p { margin: 5px 0; }
+    .search-box { margin: 20px 0; text-align: center; }
+    .search-box input { width: 50%; padding: 10px; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>OSCCLncDB</h1>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#browse">Browse</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <section id="home">
+      <h2>Welcome to OSCCLncDB</h2>
+      <p>This database hosts curated information on lncRNAs associated with Oral Squamous Cell Carcinoma (OSCC). Each entry contains functional annotations, sequences, target genes, and reference links.</p>
+    </section>
+
+    <section id="browse">
+      <h2>Browse lncRNAs</h2>
+      <div class="search-box">
+        <input type="text" id="search" placeholder="Search by lncRNA name..." onkeyup="filterCards()" />
+      </div>
+      <div id="lncRNA-cards"></div>
+    </section>
+  </div>
+
+  <script>
+    async function loadData() {
+      const response = await fetch('cleaned_lncRNA_data.csv');
+      const data = await response.text();
+      const lines = data.split('\n');
+      const headers = lines[0].split(',');
+      const container = document.getElementById('lncRNA-cards');
+
+      for (let i = 1; i < lines.length; i++) {
+        const row = lines[i].split(',');
+        if (row.length < 5) continue;
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>${row[0]}</h3>
+          <p><strong>Length:</strong> ${row[2]}</p>
+          <p><strong>Transcript Info:</strong> ${row[4]}</p>
+          <p><strong>Sequence:</strong> ${row[1].slice(0, 100)}... <em>(truncated)</em></p>
+          <p><strong>DOI:</strong> <a href="${row[3]}" target="_blank">${row[3]}</a></p>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function filterCards() {
+      const input = document.getElementById('search').value.toLowerCase();
+      const cards = document.getElementsByClassName('card');
+      Array.from(cards).forEach(card => {
+        const title = card.getElementsByTagName('h3')[0].textContent.toLowerCase();
+        card.style.display = title.includes(input) ? 'block' : 'none';
+      });
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
