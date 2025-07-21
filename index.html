@@ -4,40 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>OSCCLncDB - Oral Cancer lncRNA Database</title>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" />
   <style>
     body {
       font-family: 'Open Sans', sans-serif;
       margin: 0;
       background-color: #f4f4f4;
     }
-
     header {
       background-color: #2c3e50;
       color: white;
       padding: 20px;
+      position: relative;
       text-align: center;
     }
-
+    header img.logo {
+      position: absolute;
+      top: 10px;
+      height: 60px;
+    }
+    #logo-left {
+      left: 20px;
+    }
+    #logo-right {
+      right: 20px;
+    }
     main {
       max-width: 1000px;
       margin: 20px auto;
       padding: 0 20px;
     }
-
     .search-container {
       text-align: center;
       margin-bottom: 20px;
     }
-
     #searchBox {
       width: 80%;
       padding: 10px;
       font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
     }
-
     .lncrna-card {
       background-color: #fff;
       border-radius: 8px;
@@ -45,16 +50,13 @@
       margin-bottom: 20px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-
     .lncrna-card h2 {
       color: #2980b9;
       margin-bottom: 10px;
     }
-
     .lncrna-card p {
       margin: 4px 0;
     }
-
     .lncrna-card button {
       margin-top: 10px;
       padding: 8px 12px;
@@ -64,11 +66,9 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     .lncrna-card button:hover {
       background-color: #2980b9;
     }
-
     #sequenceModal {
       display: none;
       position: fixed;
@@ -80,71 +80,61 @@
       overflow: auto;
       background-color: rgba(0, 0, 0, 0.6);
     }
-
     #modalContent {
       background-color: #fff;
-      margin: 5% auto;
+      margin: 10% auto;
       padding: 20px;
       border-radius: 8px;
       width: 80%;
       max-width: 600px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
-
     #closeModal {
       float: right;
       cursor: pointer;
       font-weight: bold;
       font-size: 20px;
     }
-
-    #sequenceText {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      max-height: 400px;
-      overflow-y: auto;
-      font-family: monospace;
-      margin-top: 10px;
-    }
-
-    .pagination {
-      text-align: center;
-      margin: 20px;
-    }
-
-    .pagination button {
-      margin: 0 5px;
-      padding: 5px 10px;
-      font-size: 1rem;
-    }
-
     footer {
       background-color: #2c3e50;
       color: white;
       text-align: center;
       padding: 10px;
       margin-top: 40px;
-      position: relative;
     }
-
-    @media screen and (max-width: 600px) {
-      #searchBox {
-        width: 95%;
-      }
+    .pagination {
+      text-align: center;
+      margin: 20px 0 40px 0;
+    }
+    .pagination button {
+      margin: 0 5px;
+      padding: 6px 12px;
+      font-size: 1rem;
+      border: none;
+      background-color: #2c3e50;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .pagination button:hover {
+      background-color: #34495e;
     }
   </style>
 </head>
 <body>
+
   <header>
+    <img src="CUJ Logo.png" class="logo" id="logo-left" alt="CUJ Logo">
+    <img src="CMB logo.jpg" class="logo" id="logo-right" alt="CMB Logo">
     <h1>OSCCLncDB</h1>
     <p>A curated database of lncRNAs associated with Oral Squamous Cell Carcinoma</p>
   </header>
 
   <main>
     <div class="search-container">
-      <input type="text" id="searchBox" oninput="renderPage()" placeholder="Search by lncRNA, Role, Gene ID, etc..." />
+      <input type="text" id="searchBox" oninput="renderPage()" placeholder="Search by lncRNA, Role, Gene ID, etc...">
     </div>
-
     <div id="data-container"></div>
 
     <div class="pagination">
@@ -155,7 +145,7 @@
   </main>
 
   <footer>
-    &copy; 2025 OSCCLncDB, Centre for Molecular Biology, Central University of Jammu, India | All rights reserved
+    &copy; 2025 OSCCLncRNA, Centre for Molecular Biology, Central University of Jammu, India | All rights reserved
   </footer>
 
   <div id="sequenceModal">
@@ -203,7 +193,7 @@
           <p><strong>Target/Effect:</strong> ${item["Target/effect"]}</p>
           <p><strong>Interactor:</strong> ${item.Interactor}</p>
           <p><strong>DOI:</strong> <a href="${item.doi}" target="_blank">${item.doi}</a></p>
-          <button onclick="viewSequence(\`${item["Sequence"] || 'Not available'}\`)" type="button">View Sequence</button>
+          <button onclick="viewSequence(\`${item["Sequence"] || 'Not available'}\`)">View Sequence</button>
         `;
         container.appendChild(card);
       });
