@@ -64,11 +64,15 @@
       <p>
         Dr. Shelly Sehgal is an Associate Professor at the Centre for Molecular Biology,
         Central University of Jammu. Her academic interests include Human Disease Biology,
-        Virology and Cancer Biology :contentReference[oaicite:2]{index=2}. She holds a PhD in Microbiology
-        and completed her postdoctoral training in Molecular Biology. Dr. Sehgal’s expertise
-        and leadership at the CMB have strengthened research in cancer biology and molecular
-        diagnostics at CU Jammu.
+        Virology and Cancer Biology. She holds a PhD in Microbiology and completed her
+        postdoctoral training in Molecular Biology. Dr. Sehgal’s expertise and leadership
+        at CMB have strengthened research in cancer biology and molecular diagnostics at CU Jammu.
       </p>
+      <h3>Research Team</h3>
+      <ul>
+        <li><strong>Dr. Shelly Sehgal</strong> — Principal Investigator</li>
+        <li><strong>Mr. Manish Kumar Mishra</strong> — Database Developer & Research Associate</li>
+      </ul>
     </section>
   </main>
 
@@ -90,14 +94,14 @@
 
     function renderPage(){
       const q = document.getElementById('searchBox').value.toLowerCase();
-      filteredData = data.filter(item => Object.values(item).some(val => String(val).toLowerCase().includes(q)));
+      filteredData = data.filter(item => Object.values(item).some(v => String(v).toLowerCase().includes(q)));
       const start = (currentPage-1)*itemsPerPage, end = start+itemsPerPage;
       const page = filteredData.slice(start, end);
-      const container = document.getElementById('data-container');
-      container.innerHTML = '';
-      page.forEach(item=>{
-        const c = document.createElement('div'); c.className='lncrna-card';
-        c.innerHTML = `
+      const c = document.getElementById('data-container');
+      c.innerHTML = '';
+      page.forEach(item => {
+        const cdiv = document.createElement('div'); cdiv.className = 'lncrna-card';
+        cdiv.innerHTML = `
           <h2>${item.lncRNA}</h2>
           <p><strong>Description:</strong> ${item.Description}</p>
           <p><strong>Location:</strong> ${item.Location}</p>
@@ -109,24 +113,23 @@
           <p><strong>Target/Effect:</strong> ${item["Target/effect"]}</p>
           <p><strong>Interactor:</strong> ${item.Interactor}</p>
           <p><strong>DOI:</strong> <a href="${item.doi}" target="_blank">${item.doi}</a></p>
-          <button onclick="viewSequence(\`${item["Sequence"]||'Not available'}\`)">View Sequence</button>
-        `;
-        container.appendChild(c);
+          <button onclick="viewSequence(\`${item["Sequence"]||'Not available'}\`)">View Sequence</button>`;
+        c.appendChild(cdiv);
       });
-      document.getElementById('page-num').textContent=`Page ${currentPage}`;
+      document.getElementById('page-num').textContent = `Page ${currentPage}`;
     }
 
-    function viewSequence(seq){ document.getElementById('sequenceText').textContent=seq; document.getElementById('sequenceModal').style.display='block'; }
+    function viewSequence(seq){ document.getElementById('sequenceText').textContent = seq; document.getElementById('sequenceModal').style.display='block'; }
     function closeModal(){ document.getElementById('sequenceModal').style.display='none'; }
     function prevPage(){ if(currentPage>1){ currentPage--; renderPage(); } }
-    function nextPage(){ if(currentPage*itemsPerPage < filteredData.length){ currentPage++; renderPage(); } }
+    function nextPage(){ if(currentPage*itemsPerPage<filteredData.length){ currentPage++; renderPage(); } }
 
     function showSection(id){
-      document.getElementById('home').classList.toggle('hidden', id!=='home');
-      document.getElementById('about').classList.toggle('hidden', id!=='about');
+      document.getElementById('home').classList.toggle('hidden', id !== 'home');
+      document.getElementById('about').classList.toggle('hidden', id !== 'about');
     }
 
-    Papa.parse('lncRNA_data.csv',{ download:true, header:true, skipEmptyLines:true, complete:(r)=>{data=r.data; filteredData=data; renderPage(); }});
+    Papa.parse('lncRNA_data.csv',{ download:true, header:true, skipEmptyLines:true, complete:(r)=>{ data=r.data; filteredData=data; renderPage(); }});
   </script>
 </body>
 </html>
