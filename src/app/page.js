@@ -31,7 +31,7 @@ const WelcomeMessage = () => (
         If you use OSCClncDB in your research, please cite us. This helps support the continued development and maintenance of this resource.
       </p>
       <blockquote className="text-sm text-gray-800 bg-gray-200 p-3 rounded">
-        [Your Name/Lab Name], [Year]. OSCClncDB: A comprehensive database of long non-coding RNAs in Oral Squamous Cell Carcinoma. Retrieved from [Your Website URL].
+        Shelly Sehgal, Manish Kumar Mishra, 2025. OSCClncDB: A comprehensive database of long non-coding RNAs in Oral Squamous Cell Carcinoma. Retrieved from [Your Website URL].
       </blockquote>
     </div>
   </div>
