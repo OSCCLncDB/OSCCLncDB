@@ -22,61 +22,49 @@ except FileNotFoundError:
     exit()
 
 # Prepare the sequence data for merging
-# Clean up column names by stripping whitespace
 df_seq.columns = [col.strip() for col in df_seq.columns]
 df_seq = df_seq.rename(columns={'lncRNA': 'Name'})
-
-# --- FIX ---
-# The original code failed because the 'Name' column in the 'Sequence' sheet
-# contained duplicate values (e.g., 'LINC00668'), which cannot be used to
-# create a unique index. The following line resolves this by dropping
-# duplicate entries based on the 'Name' column, keeping the first occurrence.
 df_seq.drop_duplicates(subset='Name', keep='first', inplace=True)
-# --- END FIX ---
 
-# Now that the 'Name' column is unique, we can safely create the dictionary
 seq_dict = df_seq.set_index('Name').to_dict(orient='index')
-
 merged_data = []
 
 # Iterate through the main list and merge data
 for _, row in df_list.iterrows():
     record = row.to_dict()
-    # Replace numpy.nan with None for clean JSON output
     record = {k: (v if pd.notna(v) else None) for k, v in record.items()}
-
+    
     name_key = record.get('Name')
     if not name_key:
         continue
 
-    # Attempt to find a matching sequence record
     seq_data = None
-    # Try matching the full name
     if name_key in seq_dict:
         seq_data = seq_dict[name_key]
     else:
-        # If no direct match, try matching the part before a '/'
         base_name = name_key.split('/')[0].strip()
         if base_name in seq_dict:
             seq_data = seq_dict[base_name]
 
-    # Add sequence and reference information if a match was found
     if seq_data:
-        record['Sequence'] = seq_data.get('Sequence')
-        record['Length'] = seq_data.get('Length')
+        # --- Start of fix ---
+        # Ensure NaN from the sequence DataFrame is converted to None for JSON compatibility
+        sequence = seq_data.get('Sequence')
+        record['Sequence'] = sequence if pd.notna(sequence) else None
         
-        # Merge DOI, prioritizing existing DOI and handling multiple DOIs
+        length = seq_data.get('Length')
+        record['Length'] = length if pd.notna(length) else None
+        # --- End of fix ---
+
         seq_doi = seq_data.get('DOI')
         list_doi = record.get('DOI')
         
         if pd.notna(seq_doi) and pd.notna(list_doi):
-            # Combine if they are different, avoiding duplicates
             if str(seq_doi).strip() != str(list_doi).strip():
                 record['DOI'] = f"{list_doi}, {seq_doi}"
         elif pd.notna(seq_doi):
             record['DOI'] = seq_doi
-
-    # Create a unique, URL-safe ID for each entry
+    
     record['id'] = create_web_id(name_key)
     merged_data.append(record)
 
