@@ -47,7 +47,7 @@ export default function Footer() {
                 height={80} 
                 className="rounded-full shadow-md"
               />
-              <p className="mb-4">We express our sincere gratitude to the Honorable Vice-Chancellor, Prof. Sanjeev Jain, for his unwavering support and encouragement.</p>
+              <p className="mb-4">We express our sincere gratitude to the Honorable Vice-Chancellor, Prof. Sanjeev Jain, and JKST&IC, Govt of J&K, for their unwavering support and encouragement.</p>
             </div>
           </div>
         </div>
@@ -61,3 +61,4 @@ export default function Footer() {
     </footer>
   );
 }
+
