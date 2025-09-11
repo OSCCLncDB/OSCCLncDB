@@ -55,10 +55,11 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-10 border-t pt-6 text-sm">
           <p>&copy; {new Date().getFullYear()} OSCClncDB. All Rights Reserved.</p>
-          <p>Contact: <a href="mailto:your-email@example.com" className="text-blue-600 hover:underline">contact@oscclncdb.in</a></p>
+          <p>Contact: <a href="mailto:your-email@example.com" className="text-blue-600 hover:underline">contact.oscclncdb@gmail.com</a></p>
         </div>
       </div>
     </footer>
   );
 }
+
 
