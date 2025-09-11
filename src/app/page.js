@@ -23,7 +23,7 @@ const WelcomeMessage = () => (
       <li>Links to the original research papers</li>
     </ul>
     <p className="text-gray-700 mb-6">
-      Our goal is to support the scientific community by making complex data accessible. By providing this tool, we hope to help speed up research and ultimately contribute to new strategies in the fight against oral cancer. This project was developed with the valued guidance of Prof. Sanjeev Jain.
+      Our goal is to support the scientific community by making complex data accessible. By providing this tool, we hope to help speed up research and ultimately contribute to new strategies in the fight against oral cancer.
     <div className="bg-gray-100 p-4 rounded-md">
       <h3 className="font-semibold text-lg text-gray-800 mb-2">How to Cite</h3>
       <p className="text-gray-600 mb-2">
