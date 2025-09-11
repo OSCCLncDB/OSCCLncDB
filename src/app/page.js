@@ -13,8 +13,8 @@ const WelcomeMessage = () => (
       Your comprehensive resource for exploring long non-coding RNAs (lncRNAs) linked to Oral Squamous Cell Carcinoma (OSCC). We built this database to serve everyone from seasoned researchers to students and clinicians, creating one central place to find reliable information on lncRNAs in oral cancer.
     </p>
     <p className="text-gray-700 mb-4">
-      Inside, you'll find carefully organized data for each lncRNA, making it easy to look up key details such as:
-    </p>
+  Inside, you&apos;ll find carefully organized data for each lncRNA, making it easy to look up key details such as:
+</p>
     <ul className="list-disc list-inside text-gray-700 mb-4 pl-4">
       <li>Official Gene and Ensembl IDs</li>
       <li>Its location on the chromosome and full sequence</li>
