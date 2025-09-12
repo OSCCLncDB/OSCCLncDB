@@ -24,13 +24,14 @@ const WelcomeMessage = () => (
     </ul>
     <p className="text-gray-700 mb-6">
       Our goal is to support the scientific community by making complex data accessible. By providing this tool, we hope to help speed up research and ultimately contribute to new strategies in the fight against oral cancer. This project was developed with the valued guidance of Prof. Sanjeev Jain.
+    </p>
     <div className="bg-gray-100 p-4 rounded-md">
       <h3 className="font-semibold text-lg text-gray-800 mb-2">How to Cite</h3>
       <p className="text-gray-600 mb-2">
         If you use OSCClncDB in your research, please cite us. This helps support the continued development and maintenance of this resource.
       </p>
       <blockquote className="text-sm text-gray-800 bg-gray-200 p-3 rounded">
-        Shelly Sehgal, Manish Kumar Mishra, 2025. OSCClncDB: A comprehensive database of long non-coding RNAs in Oral Squamous Cell Carcinoma. Retrieved from www.oscclncdb.in.
+        Manish Kumar Mishra, Shelly Sehgal, 2025. OSCClncDB: A comprehensive database of long non-coding RNAs in Oral Squamous Cell Carcinoma. Retrieved from www.oscclncdb.in.
       </blockquote>
     </div>
   </div>
